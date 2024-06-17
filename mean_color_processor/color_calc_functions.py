@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 from webcolors import hex_to_rgb
 from scipy.spatial import KDTree
@@ -12,11 +13,11 @@ from webcolors._definitions import (
 
 async def mean_color(image_path: str) -> tuple[int, int, int]:
     image = cv2.imread(image_path)
-    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    mean_color = image_rgb.mean(axis=(0, 1), dtype=int)
+    mean_blue = int(np.mean(image[:, :, 0]))
+    mean_green = int(np.mean(image[:, :, 1]))
+    mean_red = int(np.mean(image[:, :, 2]))
 
-    result = [int(x) for x in mean_color]
-    return tuple(result)
+    return (mean_red, mean_green, mean_blue)
 
 
 async def convert_rgb_to_names(rgb_tuple: tuple[int, int, int]) -> str:
