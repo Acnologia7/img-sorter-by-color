@@ -1,8 +1,19 @@
 import json
 from nats.aio.client import Client
 from nats.aio.msg import Msg
-from utils import is_verified, publish_message, build_json_message
-from color_calc_functions import *
+
+try:
+    from .utils import (
+        is_verified,
+        publish_message,
+        build_json_message,
+    )
+except ImportError:
+    from utils import (
+        is_verified,
+        publish_message,
+        build_json_message,
+    )
 
 
 class BaseHandler:
@@ -23,23 +34,23 @@ class BaseHandler:
     async def publish_message(self, message: str) -> None:
         await publish_message(message, self.client, self.pub_topic)
 
-    async def process_message(self, data: str) -> None:
+    async def process_message(self, data: dict) -> None:
         raise NotImplementedError("Subclasses must implement process_message method")
 
 
-class CalculationWorkflowHandler(BaseHandler):
+class UIWorkflowHandler(BaseHandler):
     def __init__(self, client: Client, pub_topic: str):
         super().__init__(client, pub_topic)
 
-    async def process_message(self, data: dict) -> None:
-        file_path = data["file_path"]
+    async def process_message(self, data) -> None:
+        file_path = data.get("file_path", "")
+        is_ui_request = data.get("is_ui_request", False)
+
         try:
             if await is_verified(file_path):
-                mean_rgb = await mean_color(file_path)
-                color_name = await convert_rgb_to_names(mean_rgb)
                 json_message = build_json_message(
-                    file_path=file_path, mean_rgb=mean_rgb, color_name=color_name
+                    file_path=file_path, is_ui_request=is_ui_request
                 )
                 await self.publish_message(json_message)
         except Exception as e:
-            print(f"Error in CalculationWorkflowHandler: {e}")
+            print(f"Error in UIWorkflowHandler: {e}")

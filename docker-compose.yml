@@ -1,16 +1,40 @@
-version: '3.8'
+version: '1.0'
 
 services:
+  service1:
+    build: input_scanner_service
+    container_name: input_scanner_service
+    depends_on:
+      - nats-server
+    volumes:
+      - ${INPUT_BASE_DIRECTORY_HOST}:${INPUT_BASE_DIRECTORY_GUEST}
+    env_file:
+      - .env
+  
+  service2:
+    build: average_color_calculator_service
+    container_name: average_color_calculator_service
+    depends_on:
+      - nats-server
+    volumes:
+      - ${INPUT_BASE_DIRECTORY_HOST}:${INPUT_BASE_DIRECTORY_GUEST}
+    env_file:
+      - .env
+  
+  service3:
+    build: result_sorter_service
+    container_name: result_sorter_service
+    depends_on:
+      - nats-server
+    volumes:
+      - ${INPUT_BASE_DIRECTORY_HOST}:${INPUT_BASE_DIRECTORY_GUEST}
+      - ${OUTPUT_BASE_DIRECTORY_HOST}:${OUTPUT_BASE_DIRECTORY_GUEST}
+    env_file:
+      - .env
+
   nats-server:
     image: nats:latest
     container_name: nats
     ports:
-      #- "${NATS_PORT}:${NATS_PORT}"
-      - 4222:4222
-      - 8222:8222
-    networks:
-      - nats-net
+      - "${NATS_PORT}:${NATS_PORT}"
 
-networks:
-  nats-net:
-    driver: bridge

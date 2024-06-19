@@ -1,22 +1,28 @@
 import nats, asyncio, os
 from dotenv import load_dotenv
-from utils import *
-from handlers import UIWorkflowHandler
+
+try:
+    from .utils import *
+    from .handlers import UIWorkflowHandler
+except ImportError:
+    from utils import *
+    from handlers import UIWorkflowHandler
 
 load_dotenv()
 
-inputs_path = os.getenv("INPUT_FOLDER")
-scan_interval = int(os.getenv("SCAN_INTERVAL", 1))
+inputs_path = os.getenv("INPUT_BASE_DIRECTORY")
+scan_interval = int(os.getenv("SCAN_INTERVAL", 2))
 server_url = os.getenv("NATS_SERVER_URL")
 
 
 async def main():
 
-    sub_topic = "topic.to.invalidate"
+    sub_topic = "topic.from.ui"
     pub_topic = "topic.to.calculate"
 
+    client = await nats.connect(server_url)
+
     try:
-        client = await nats.connect(server_url)
         print("connected to the Nats server")
         uiwh = UIWorkflowHandler(client, pub_topic)
 

@@ -2,7 +2,11 @@ import os, json
 
 from PIL import Image
 from nats.aio.client import Client
-from constants import IMAGE_FILE_EXTENSIONS
+
+try:
+    from .constants import IMAGE_FILE_EXTENSIONS
+except ImportError:
+    from constants import IMAGE_FILE_EXTENSIONS
 
 
 async def scan_folder_for_images(folder_path: str) -> list[str]:
@@ -26,10 +30,10 @@ async def scan_folder_for_images(folder_path: str) -> list[str]:
             else:
                 print(f"Image validation failed, it is not an image: {image_path}")
 
-        return image_paths
-
     except Exception as e:
         print(f"Error during folder scanning: {e}")
+
+    return image_paths
 
 
 async def is_verified(image_path: str) -> bool:
@@ -61,10 +65,12 @@ def build_json_message(
     return json_msg
 
 
-async def publish_message(msg: dict, client: Client, pub_topic: str) -> None:
+async def publish_message(msg: str, client: Client, pub_topic: str) -> None:
+
+    encoded_msg = msg.encode()
+
     try:
-        encoded_msg = msg.encode()
         await client.publish(pub_topic, encoded_msg)
-        print(f"Sent message on '{pub_topic}': {encoded_msg}")
+        print(f"Sent message on {pub_topic}: {encoded_msg}")
     except Exception as e:
-        print(f"Error with publishing message on'{pub_topic}': {encoded_msg}", e)
+        print(f"Error with publishing message on {pub_topic}: {encoded_msg} {e}")

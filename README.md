@@ -1,1 +1,0 @@
-# img-sorter-by-color

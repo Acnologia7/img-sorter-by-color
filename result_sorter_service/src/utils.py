@@ -38,4 +38,6 @@ async def publish_message(msg: dict, client: Client, pub_topic: str) -> None:
         await client.publish(pub_topic, encoded_msg)
         print(f"Sent message on '{pub_topic}': {encoded_msg}")
     except Exception as e:
-        print(f"Error with publishing message on'{pub_topic}': {encoded_msg}", e)
+        print(
+            f"Error with publishing message on {pub_topic}: {encoded_msg} {e}",
+        )
