@@ -1,6 +1,7 @@
-import asyncio, nats, os
+import asyncio, os
 
 from dotenv import load_dotenv
+from nats.aio.client import Client
 
 from handlers import SortWorkflowHandler
 from utils import check_env_variables
@@ -18,8 +19,10 @@ async def main():
     pub_topic = "topic.to.ui"
     sub_topic = "topic.to.sort"
 
+    client = Client()
+
     try:
-        client = await nats.connect(server_url)
+        await client.connect(server_url)
         print("connected to the Nats server")
 
         swh = SortWorkflowHandler(client, pub_topic)
