@@ -1,4 +1,5 @@
 import json, os
+
 from PIL import Image
 from nats.aio.client import Client
 
@@ -16,6 +17,25 @@ async def is_verified(image_path: str) -> bool:
         return False
 
 
+async def publish_message(msg: dict, client: Client, pub_topic: str) -> None:
+    try:
+        encoded_msg = msg.encode()
+        await client.publish(pub_topic, encoded_msg)
+        print(f"Sent message on '{pub_topic}': {encoded_msg}")
+    except Exception as e:
+        print(
+            f"Error with publishing message on {pub_topic}: {encoded_msg} {e}",
+        )
+
+
+def check_env_variables(*vars):
+    missing_vars = [var for var in vars if os.getenv(var) is None]
+    if missing_vars:
+        raise EnvironmentError(
+            f"Missing required environment variables: {', '.join(missing_vars)}"
+        )
+
+
 def build_json_message(
     file_path: str,
     mean_rgb: list = None,
@@ -30,14 +50,3 @@ def build_json_message(
     }
     json_msg = json.dumps(raw)
     return json_msg
-
-
-async def publish_message(msg: dict, client: Client, pub_topic: str) -> None:
-    try:
-        encoded_msg = msg.encode()
-        await client.publish(pub_topic, encoded_msg)
-        print(f"Sent message on '{pub_topic}': {encoded_msg}")
-    except Exception as e:
-        print(
-            f"Error with publishing message on {pub_topic}: {encoded_msg} {e}",
-        )

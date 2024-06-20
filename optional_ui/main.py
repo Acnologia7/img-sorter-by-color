@@ -1,5 +1,4 @@
-import asyncio, nats, os, json
-import shutil
+import asyncio, nats, os, json, shutil
 
 from dotenv import load_dotenv
 

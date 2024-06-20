@@ -1,17 +1,17 @@
-import nats, asyncio, os
-from dotenv import load_dotenv
+import asyncio, os
 
-try:
-    from .utils import *
-    from .handlers import UIWorkflowHandler
-except ImportError:
-    from utils import *
-    from handlers import UIWorkflowHandler
+from dotenv import load_dotenv
+from nats.aio.client import Client
+
+from utils import *
+from handlers import UIWorkflowHandler
+
 
 load_dotenv()
+check_env_variables("INPUT_BASE_DIRECTORY", "SCAN_INTERVAL", "NATS_SERVER_URL")
 
 inputs_path = os.getenv("INPUT_BASE_DIRECTORY")
-scan_interval = int(os.getenv("SCAN_INTERVAL", 2))
+scan_interval = int(os.getenv("SCAN_INTERVAL"))
 server_url = os.getenv("NATS_SERVER_URL")
 
 
@@ -20,9 +20,11 @@ async def main():
     sub_topic = "topic.from.ui"
     pub_topic = "topic.to.calculate"
 
-    client = await nats.connect(server_url)
+    client = Client()
 
     try:
+        await build_input_point(inputs_path)
+        await client.connect(server_url)
         print("connected to the Nats server")
         uiwh = UIWorkflowHandler(client, pub_topic)
 
@@ -33,7 +35,7 @@ async def main():
             for image_path in image_paths:
                 json_msg = build_json_message(file_path=image_path)
                 await publish_message(json_msg, client, pub_topic)
-                await asyncio.sleep(2)
+                await asyncio.sleep(1)
             await asyncio.sleep(scan_interval)
 
     except asyncio.CancelledError:

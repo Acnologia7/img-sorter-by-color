@@ -9,6 +9,6 @@ COPY pytest.ini ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
-RUN pytest -vv
+RUN pytest
 
-CMD ["python", "./src/main.py"]
+CMD ["python", "-u", "./src/main.py"]

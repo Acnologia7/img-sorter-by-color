@@ -1,8 +1,10 @@
 import pytest, json, shutil, os
-from src.utils import *
+
 from unittest.mock import AsyncMock, patch, MagicMock
 from PIL import UnidentifiedImageError
 from nats.aio.client import Client
+
+from src.utils import *
 
 
 @pytest.fixture
@@ -150,3 +152,38 @@ def test_build_json_message_all_values():
         file_path, mean_rgb=mean_rgb, color_name=color_name, is_ui_request=is_ui_request
     )
     assert result == expected_output
+
+
+def test_check_env_variables_all_present(monkeypatch):
+    monkeypatch.setenv("INPUT_BASE_DIRECTORY", "/some/path")
+    monkeypatch.setenv("SCAN_INTERVAL", "1")
+    monkeypatch.setenv("NATS_SERVER_URL", "nats://test-case:0000")
+
+    check_env_variables("INPUT_BASE_DIRECTORY", "SCAN_INTERVAL", "NATS_SERVER_URL")
+
+
+def test_check_env_variables_missing(monkeypatch):
+    monkeypatch.delenv("INPUT_BASE_DIRECTORY", raising=False)
+    monkeypatch.delenv("SCAN_INTERVAL", raising=False)
+    monkeypatch.delenv("NATS_SERVER_URL", raising=False)
+
+    with pytest.raises(EnvironmentError) as excinfo:
+        check_env_variables("INPUT_BASE_DIRECTORY", "SCAN_INTERVAL", "NATS_SERVER_URL")
+
+    assert "Missing required environment variables" in str(excinfo.value)
+    assert "INPUT_BASE_DIRECTORY" in str(excinfo.value)
+    assert "SCAN_INTERVAL" in str(excinfo.value)
+    assert "NATS_SERVER_URL" in str(excinfo.value)
+
+
+def test_check_env_variables_partial_present(monkeypatch):
+    monkeypatch.setenv("INPUT_BASE_DIRECTORY", "/some/path")
+    monkeypatch.delenv("SCAN_INTERVAL", raising=False)
+    monkeypatch.delenv("NATS_SERVER_URL", raising=False)
+
+    with pytest.raises(EnvironmentError) as excinfo:
+        check_env_variables("INPUT_BASE_DIRECTORY", "SCAN_INTERVAL", "NATS_SERVER_URL")
+
+    assert "Missing required environment variables" in str(excinfo.value)
+    assert "SCAN_INTERVAL" in str(excinfo.value)
+    assert "NATS_SERVER_URL" in str(excinfo.value)

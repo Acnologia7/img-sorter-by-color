@@ -9,6 +9,16 @@ except ImportError:
     from constants import IMAGE_FILE_EXTENSIONS
 
 
+async def build_input_point(folder_path: str) -> None:
+    try:
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path, exist_ok=True)
+            print(f"Subdirectory path {folder_path} successfuly built")
+
+    except OSError as e:
+        print(f"Error during building a subdirectory path {folder_path} {e}")
+
+
 async def scan_folder_for_images(folder_path: str) -> list[str]:
 
     image_paths = []
@@ -49,6 +59,25 @@ async def is_verified(image_path: str) -> bool:
         return False
 
 
+async def publish_message(msg: str, client: Client, pub_topic: str) -> None:
+
+    encoded_msg = msg.encode()
+
+    try:
+        await client.publish(pub_topic, encoded_msg)
+        print(f"Sent message on {pub_topic}: {encoded_msg}")
+    except Exception as e:
+        print(f"Error with publishing message on {pub_topic}: {encoded_msg} {e}")
+
+
+def check_env_variables(*vars):
+    missing_vars = [var for var in vars if os.getenv(var) is None]
+    if missing_vars:
+        raise EnvironmentError(
+            f"Missing required environment variables: {', '.join(missing_vars)}"
+        )
+
+
 def build_json_message(
     file_path: str,
     mean_rgb: list = None,
@@ -63,14 +92,3 @@ def build_json_message(
     }
     json_msg = json.dumps(raw)
     return json_msg
-
-
-async def publish_message(msg: str, client: Client, pub_topic: str) -> None:
-
-    encoded_msg = msg.encode()
-
-    try:
-        await client.publish(pub_topic, encoded_msg)
-        print(f"Sent message on {pub_topic}: {encoded_msg}")
-    except Exception as e:
-        print(f"Error with publishing message on {pub_topic}: {encoded_msg} {e}")

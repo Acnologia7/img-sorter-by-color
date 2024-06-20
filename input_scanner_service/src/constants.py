@@ -1,5 +1,3 @@
-# constants.py
-
 IMAGE_FILE_EXTENSIONS = (
     ".jpeg",
     ".jpg",

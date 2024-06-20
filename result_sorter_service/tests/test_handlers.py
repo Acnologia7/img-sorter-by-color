@@ -1,8 +1,8 @@
-import os
-import shutil
-import pytest, json
+import os, pytest, json, shutil
+
 from unittest.mock import AsyncMock, MagicMock, patch
 from nats.aio.client import Client, Msg
+
 from src.handlers import BaseHandler, SortWorkflowHandler
 
 
@@ -65,7 +65,6 @@ def setup_test_data():
 @pytest.mark.asyncio
 async def test_sort_img(setup_test_data):
     assert os.environ["OUTPUT_BASE_DIRECTORY"] == "/output"
-    # output_base_directory = "/output" if os.name == "posix" else "\\output"
 
     image_path = setup_test_data
     color_name = "red"

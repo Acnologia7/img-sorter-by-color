@@ -8,6 +8,6 @@ COPY requirements.txt ./
 COPY pytest.ini ./
 
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pytest -vv
+RUN pytest
 
-CMD ["python", "./src/main.py"]
+CMD ["python", "-u", "./src/main.py"]

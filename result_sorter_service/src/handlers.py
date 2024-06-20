@@ -46,16 +46,12 @@ class SortWorkflowHandler(BaseHandler):
         self,
         source_path: str,
         color_name: str,
-        output_base_directory=output_base_directory,
     ) -> str:
 
         destination_path = ""
 
         try:
             img_name = os.path.basename(source_path)
-            print(img_name)
-            print(output_base_directory)
-            print(color_name)
             destination_path = os.path.join(output_base_directory, color_name, img_name)
             print(destination_path)
             os.makedirs(os.path.dirname(destination_path), exist_ok=True)
@@ -88,7 +84,7 @@ class SortWorkflowHandler(BaseHandler):
                     color_name=color_name,
                     is_ui_request=is_ui_request,
                 )
-                # this could be an another handler
+                # this could be theoreticaly another handler
                 if is_ui_request:
                     print("Publishing msg to UI...")
                     await self.publish_message(json_message)

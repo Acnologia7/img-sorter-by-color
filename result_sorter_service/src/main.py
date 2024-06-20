@@ -1,9 +1,14 @@
 import asyncio, nats, os
 
 from dotenv import load_dotenv
+
 from handlers import SortWorkflowHandler
+from utils import check_env_variables
+
 
 load_dotenv()
+
+check_env_variables("NATS_SERVER_URL", "OUTPUT_BASE_DIRECTORY")
 
 server_url = os.getenv("NATS_SERVER_URL")
 

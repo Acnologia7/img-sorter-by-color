@@ -22,6 +22,7 @@ class BaseHandler:
             content = json.loads(data)
             print(f"Received a message on '{subject}': {content}")
             await self.process_message(content)
+
         except Exception as e:
             print(f"Error in message handling: {e}")
 
@@ -52,5 +53,6 @@ class CalculationWorkflowHandler(BaseHandler):
                     is_ui_request=is_ui_request,
                 )
                 await self.publish_message(json_message)
+
         except Exception as e:
             print(f"Error in CalculationWorkflowHandler: {e}")

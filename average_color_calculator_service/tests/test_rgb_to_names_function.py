@@ -1,4 +1,5 @@
 import pytest
+
 from src.color_calc_functions import convert_rgb_to_names
 
 

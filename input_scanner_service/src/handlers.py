@@ -1,4 +1,5 @@
 import json
+
 from nats.aio.client import Client
 from nats.aio.msg import Msg
 

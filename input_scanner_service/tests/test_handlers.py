@@ -1,6 +1,8 @@
 import pytest, json
+
 from unittest.mock import AsyncMock, MagicMock, patch
 from nats.aio.client import Client, Msg
+
 from src.handlers import BaseHandler
 
 

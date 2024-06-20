@@ -1,6 +1,12 @@
-import asyncio, nats, os
+import asyncio, os
 
+from nats.aio.client import Client
+from dotenv import load_dotenv
 from handlers import CalculationWorkflowHandler
+from utils import check_env_variables
+
+load_dotenv()
+check_env_variables("NATS_SERVER_URL", "OUTPUT_BASE_DIRECTORY")
 
 server_url = os.getenv("NATS_SERVER_URL")
 
@@ -10,8 +16,10 @@ async def main():
     pub_topic = "topic.to.sort"
     sub_topic = "topic.to.calculate"
 
+    client = Client()
+
     try:
-        client = await nats.connect(server_url)
+        await client.connect(server_url)
         print("connected to the Nats server")
         cwh = CalculationWorkflowHandler(client, pub_topic)
 

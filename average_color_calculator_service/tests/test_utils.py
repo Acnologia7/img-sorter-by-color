@@ -1,8 +1,10 @@
 import pytest, json
-from src.utils import *
+
 from unittest.mock import AsyncMock, patch, MagicMock
 from PIL import UnidentifiedImageError
 from nats.aio.client import Client
+
+from src.utils import *
 
 
 @pytest.mark.asyncio

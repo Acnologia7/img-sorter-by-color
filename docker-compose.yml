@@ -7,7 +7,7 @@ services:
     depends_on:
       - nats-server
     volumes:
-      - ${INPUT_BASE_DIRECTORY_HOST}:${INPUT_BASE_DIRECTORY_GUEST}
+      - ${INPUT_BASE_DIRECTORY_HOST}:${INPUT_BASE_DIRECTORY}
     env_file:
       - .env
   
@@ -17,7 +17,7 @@ services:
     depends_on:
       - nats-server
     volumes:
-      - ${INPUT_BASE_DIRECTORY_HOST}:${INPUT_BASE_DIRECTORY_GUEST}
+      - ${INPUT_BASE_DIRECTORY_HOST}:${INPUT_BASE_DIRECTORY}
     env_file:
       - .env
   
@@ -27,8 +27,8 @@ services:
     depends_on:
       - nats-server
     volumes:
-      - ${INPUT_BASE_DIRECTORY_HOST}:${INPUT_BASE_DIRECTORY_GUEST}
-      - ${OUTPUT_BASE_DIRECTORY_HOST}:${OUTPUT_BASE_DIRECTORY_GUEST}
+      - ${INPUT_BASE_DIRECTORY_HOST}:${INPUT_BASE_DIRECTORY}
+      - ${OUTPUT_BASE_DIRECTORY_HOST}:${OUTPUT_BASE_DIRECTORY}
     env_file:
       - .env
 
